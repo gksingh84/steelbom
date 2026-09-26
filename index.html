@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structural Steel BOM Calculator</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-calculator" aria-hidden="true"></i><span>Structural Steel BOM Calculator</span></h1>
+            <p>Calculate Bill of Materials for Structural Steel Buildings</p>
+            <p class="created-by">Created by Gaurav Kumar Singh</p>
+            <p class="autosave-status" id="autosaveStatus"></p>
+        </header>
+
+        <div class="main-content">
+            <!-- Project Information -->
+            <section class="project-info">
+                <h2><i class="fas fa-info-circle"></i> Project Information</h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="projectName">Project Name</label>
+                        <input type="text" id="projectName" placeholder="Enter project name">
+                    </div>
+                    <div class="form-group">
+                        <label for="buildingName">Building / Structure Name</label>
+                        <input type="text" id="buildingName" placeholder="Enter building/structure name">
+                    </div>
+                    <div class="form-group">
+                        <label for="projectDate">Date</label>
+                        <input type="date" id="projectDate" style="width: 200px;">
+                    </div>
+                    <div class="form-group">
+                        <label for="engineer">Engineer</label>
+                        <input type="text" id="engineer" placeholder="Engineer name">
+                    </div>
+                    <div class="form-group">
+                        <label for="steelRate">Steel Rate (₹ per kg)</label>
+                        <input type="number" id="steelRate" min="0" step="0.01" value="65.00" placeholder="Enter steel rate per kg">
+                    </div>
+                </div>
+            </section>
+
+            <!-- Section Selection -->
+            <section class="section-selection">
+                <h2><i class="fas fa-list"></i> Add Sections</h2>
+                <div class="section-tabs">
+                    <button class="tab-btn active" data-tab="standard">Standard Sections</button>
+                    <button class="tab-btn" data-tab="i-girder">I-Section Plate Girder</button>
+                    <button class="tab-btn" data-tab="box-girder">Box Section Plate Girder</button>
+                </div>
+
+                <!-- Standard Sections Tab -->
+                <div class="tab-content active" id="standard">
+                    <div class="section-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="sectionType">Section Type</label>
+                                <select id="sectionType">
+                                    <option value="">Select Section Type</option>
+                                    <option value="ISMB">ISMB - Medium Weight Beam</option>
+                                    <option value="ISJB">ISJB - Junior Beam</option>
+                                    <option value="ISLB">ISLB - Light Weight Beam</option>
+                                    <option value="ISWB">ISWB - Wide Flange Beam</option>
+                                    <option value="ISHB">ISHB - Heavy Weight Beam/Column</option>
+                                    <option value="ISMC">ISMC - Medium Weight Channel</option>
+                                    <option value="ISLC">ISLC - Light Weight Channel</option>
+                                    <option value="RHS">RHS - Rectangular Hollow Section</option>
+                                    <option value="CHS">CHS - Circular Hollow Section</option>
+                                    <option value="SHS">SHS - Square Hollow Section</option>
+                                    <option value="NPB">NPB - Narrow Parallel Flange Beam</option>
+                                    <option value="WPB">WPB - Wide Parallel Flange Beam</option>
+                                    <option value="ISA">ISA - Equal Angle</option>
+                                    <option value="ISA-unequal">ISA - Unequal Angle</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="sectionSize">Section Size</label>
+                                <select id="sectionSize" disabled>
+                                    <option value="">Select Section Type First</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="quantity">Quantity</label>
+                                <input type="number" id="quantity" min="1" value="1">
+                            </div>
+                            <div class="form-group">
+                                <label for="length">Length (m)</label>
+                                <input type="number" id="length" min="0.1" step="0.1" value="1.0">
+                            </div>
+                        </div>
+                        <div class="additional-plates-form">
+                            <fieldset class="additional-plate-group">
+                                <legend>Additional Web Plate</legend>
+                                <div class="additional-plate-fields">
+                                    <div class="form-group">
+                                        <label for="additionalWebPlateWidth">Depth (mm)</label>
+                                        <input type="number" id="additionalWebPlateWidth" min="0" step="1" placeholder="Optional">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="additionalWebPlateThickness">Thickness (mm)</label>
+                                        <input type="number" id="additionalWebPlateThickness" min="0" step="0.1" placeholder="Optional">
+                                    </div>
+                                </div>
+                            </fieldset>
+                            <fieldset class="additional-plate-group additional-flange-group">
+                                <legend>Additional Flange Plates</legend>
+                                <div class="additional-flange-options">
+                                    <fieldset class="additional-flange-option">
+                                        <legend>Top Flange</legend>
+                                        <div class="additional-plate-fields">
+                                            <div class="form-group">
+                                                <label for="additionalTopFlangePlateWidth">Width (mm)</label>
+                                                <input type="number" id="additionalTopFlangePlateWidth" min="0" step="1" placeholder="Optional">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="additionalTopFlangePlateThickness">Thickness (mm)</label>
+                                                <input type="number" id="additionalTopFlangePlateThickness" min="0" step="0.1" placeholder="Optional">
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                    <fieldset class="additional-flange-option">
+                                        <legend>Bottom Flange</legend>
+                                        <div class="additional-plate-fields">
+                                            <div class="form-group">
+                                                <label for="additionalBottomFlangePlateWidth">Width (mm)</label>
+                                                <input type="number" id="additionalBottomFlangePlateWidth" min="0" step="1" placeholder="Optional">
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="additionalBottomFlangePlateThickness">Thickness (mm)</label>
+                                                <input type="number" id="additionalBottomFlangePlateThickness" min="0" step="0.1" placeholder="Optional">
+                                            </div>
+                                        </div>
+                                    </fieldset>
+                                </div>
+                            </fieldset>
+                        </div>
+                        <button class="btn btn-primary" id="addStandardSection">
+                            <i class="fas fa-plus"></i> Add Section
+                        </button>
+                        <button class="btn btn-secondary cancel-edit-btn" id="cancelStandardSectionEdit" style="display: none;">
+                            Cancel Edit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- I-Section Plate Girder Tab -->
+                <div class="tab-content" id="i-girder">
+                    <div class="girder-form">
+                        <h3>I-Section Plate Girder Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="girderLength">Total Length (m)</label>
+                                <input type="number" id="girderLength" min="0.1" step="0.1" value="10.0">
+                            </div>
+                            <div class="form-group">
+                                <label for="totalDepth">Total Depth (mm)</label>
+                                <input type="number" id="totalDepth" min="200" step="10" value="800">
+                            </div>
+                            <div class="form-group">
+                                <label for="flangeWidth">Flange Width (mm)</label>
+                                <input type="number" id="flangeWidth" min="100" step="10" value="300">
+                            </div>
+                            <div class="form-group">
+                                <label for="flangeThickness">Flange Thickness (mm)</label>
+                                <input type="number" id="flangeThickness" min="6" step="1" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label for="webThickness">Web Thickness (mm)</label>
+                                <input type="number" id="webThickness" min="6" step="1" value="8">
+                            </div>
+                            <div class="form-group">
+                                <label for="calculatedWebHeight">Calculated Web Height (mm)</label>
+                                <input type="text" id="calculatedWebHeight" readonly value="776">
+                            </div>
+                            <div class="additional-plates-form additional-plates-form-wide">
+                                <fieldset class="additional-plate-group">
+                                    <legend>Additional Web Plate</legend>
+                                    <div class="additional-plate-fields">
+                                        <div class="form-group">
+                                            <label for="iAdditionalWebPlateWidth">Depth (mm)</label>
+                                            <input type="number" id="iAdditionalWebPlateWidth" min="0" step="1" placeholder="Optional">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="iAdditionalWebPlateThickness">Thickness (mm)</label>
+                                            <input type="number" id="iAdditionalWebPlateThickness" min="0" step="0.1" placeholder="Optional">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset class="additional-plate-group additional-flange-group">
+                                    <legend>Additional Flange Plates</legend>
+                                    <div class="additional-flange-options">
+                                        <fieldset class="additional-flange-option">
+                                            <legend>Top Flange</legend>
+                                            <div class="additional-plate-fields">
+                                                <div class="form-group">
+                                                    <label for="iAdditionalTopFlangePlateWidth">Width (mm)</label>
+                                                    <input type="number" id="iAdditionalTopFlangePlateWidth" min="0" step="1" placeholder="Optional">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="iAdditionalTopFlangePlateThickness">Thickness (mm)</label>
+                                                    <input type="number" id="iAdditionalTopFlangePlateThickness" min="0" step="0.1" placeholder="Optional">
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="additional-flange-option">
+                                            <legend>Bottom Flange</legend>
+                                            <div class="additional-plate-fields">
+                                                <div class="form-group">
+                                                    <label for="iAdditionalBottomFlangePlateWidth">Width (mm)</label>
+                                                    <input type="number" id="iAdditionalBottomFlangePlateWidth" min="0" step="1" placeholder="Optional">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="iAdditionalBottomFlangePlateThickness">Thickness (mm)</label>
+                                                    <input type="number" id="iAdditionalBottomFlangePlateThickness" min="0" step="0.1" placeholder="Optional">
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="addIGirder">
+                            <i class="fas fa-plus"></i> Add I-Section Girder
+                        </button>
+                        <button class="btn btn-secondary cancel-edit-btn" id="cancelIGirderEdit" style="display: none;">
+                            Cancel Edit
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Box Section Plate Girder Tab -->
+                <div class="tab-content" id="box-girder">
+                    <div class="girder-form">
+                        <h3>Box Section Plate Girder Details</h3>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="boxGirderLength">Total Length (m)</label>
+                                <input type="number" id="boxGirderLength" min="0.1" step="0.1" value="10.0">
+                            </div>
+                            <div class="form-group">
+                                <label for="boxTotalDepth">Total Depth (mm)</label>
+                                <input type="number" id="boxTotalDepth" min="200" step="10" value="800">
+                            </div>
+                            <div class="form-group">
+                                <label for="boxWidth">Box Width (mm)</label>
+                                <input type="number" id="boxWidth" min="100" step="10" value="400">
+                            </div>
+                            <div class="form-group">
+                                <label for="boxFlangeThickness">Flange Thickness (mm)</label>
+                                <input type="number" id="boxFlangeThickness" min="6" step="1" value="12">
+                            </div>
+                            <div class="form-group">
+                                <label for="boxWebThickness">Web Thickness (mm)</label>
+                                <input type="number" id="boxWebThickness" min="6" step="1" value="8">
+                            </div>
+                            <div class="form-group">
+                                <label for="calculatedBoxWebHeight">Calculated Web Height (mm)</label>
+                                <input type="text" id="calculatedBoxWebHeight" readonly value="776">
+                            </div>
+                            <div class="additional-plates-form additional-plates-form-wide">
+                                <fieldset class="additional-plate-group">
+                                    <legend>Additional Web Plate</legend>
+                                    <div class="additional-plate-fields">
+                                        <div class="form-group">
+                                            <label for="boxAdditionalWebPlateWidth">Depth (mm)</label>
+                                            <input type="number" id="boxAdditionalWebPlateWidth" min="0" step="1" placeholder="Optional">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="boxAdditionalWebPlateThickness">Thickness (mm)</label>
+                                            <input type="number" id="boxAdditionalWebPlateThickness" min="0" step="0.1" placeholder="Optional">
+                                        </div>
+                                    </div>
+                                </fieldset>
+                                <fieldset class="additional-plate-group additional-flange-group">
+                                    <legend>Additional Flange Plates</legend>
+                                    <div class="additional-flange-options">
+                                        <fieldset class="additional-flange-option">
+                                            <legend>Top Flange</legend>
+                                            <div class="additional-plate-fields">
+                                                <div class="form-group">
+                                                    <label for="boxAdditionalTopFlangePlateWidth">Width (mm)</label>
+                                                    <input type="number" id="boxAdditionalTopFlangePlateWidth" min="0" step="1" placeholder="Optional">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="boxAdditionalTopFlangePlateThickness">Thickness (mm)</label>
+                                                    <input type="number" id="boxAdditionalTopFlangePlateThickness" min="0" step="0.1" placeholder="Optional">
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                        <fieldset class="additional-flange-option">
+                                            <legend>Bottom Flange</legend>
+                                            <div class="additional-plate-fields">
+                                                <div class="form-group">
+                                                    <label for="boxAdditionalBottomFlangePlateWidth">Width (mm)</label>
+                                                    <input type="number" id="boxAdditionalBottomFlangePlateWidth" min="0" step="1" placeholder="Optional">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="boxAdditionalBottomFlangePlateThickness">Thickness (mm)</label>
+                                                    <input type="number" id="boxAdditionalBottomFlangePlateThickness" min="0" step="0.1" placeholder="Optional">
+                                                </div>
+                                            </div>
+                                        </fieldset>
+                                    </div>
+                                </fieldset>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="addBoxGirder">
+                            <i class="fas fa-plus"></i> Add Box Section Girder
+                        </button>
+                        <button class="btn btn-secondary cancel-edit-btn" id="cancelBoxGirderEdit" style="display: none;">
+                            Cancel Edit
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- BOM Summary -->
+            <section class="bom-summary">
+                <h2><i class="fas fa-table"></i> Bill of Materials Summary</h2>
+                
+                <!-- Summary Tabs -->
+                <div class="summary-tabs">
+                    <button class="summary-tab-btn active" data-summary="section">Section-wise Summary</button>
+                    <button class="summary-tab-btn" data-summary="plate">Plate-wise Summary</button>
+                    <button class="summary-tab-btn" data-summary="detailed">Detailed Breakdown</button>
+                </div>
+
+                <!-- Section-wise Summary -->
+                <div class="summary-content active" id="section-summary">
+                    <div class="summary-table">
+                        <table id="sectionTable">
+                            <thead>
+                                <tr>
+                                    <th>Section Type</th>
+                                    <th>Size</th>
+                                    <th>Quantity</th>
+                                    <th>Length (m)</th>
+                                    <th>Unit Weight (kg/m)</th>
+                                    <th>Total Weight (kg)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sectionTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Plate-wise Summary -->
+                <div class="summary-content" id="plate-summary">
+                    <div class="summary-table">
+                        <table id="plateTable">
+                            <thead>
+                                <tr>
+                                    <th>Section / Girder</th>
+                                    <th>Plate Type</th>
+                                    <th>Dimensions (mm)</th>
+                                    <th>Thickness (mm)</th>
+                                    <th>Quantity</th>
+                                    <th>Area (m²)</th>
+                                    <th>Weight (kg)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="plateTableBody">
+                            </tbody>
+                            <tfoot id="plateTableFooter">
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Detailed Breakdown -->
+                <div class="summary-content" id="detailed-summary">
+                    <div class="detailed-breakdown">
+                        <div class="breakdown-section">
+                            <h3>Standard Sections</h3>
+                            <div id="standardSectionsList"></div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>I-Section Plate Girders</h3>
+                            <div id="iGirdersList"></div>
+                        </div>
+                        <div class="breakdown-section">
+                            <h3>Box Section Plate Girders</h3>
+                            <div id="boxGirdersList"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Total Summary -->
+                <div class="total-summary">
+                    <div class="total-card">
+                        <h3>Total Summary</h3>
+                        <div class="total-grid">
+                            <div class="total-item">
+                                <span class="total-label">Total Weight:</span>
+                                <span class="total-value" id="totalWeight">0 kg</span>
+                            </div>
+                            <div class="total-item">
+                                <span class="total-label">Standard Sections:</span>
+                                <span class="total-value" id="standardWeight">0 kg</span>
+                            </div>
+                            <div class="total-item">
+                                <span class="total-label">Plate Girders:</span>
+                                <span class="total-value" id="girderWeight">0 kg</span>
+                            </div>
+                            <div class="total-item">
+                                <span class="total-label">Total Cost (₹):</span>
+                                <span class="total-value" id="totalCost">₹0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Actions -->
+            <section class="actions">
+                <button class="btn btn-secondary" id="clearAll">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+                <button class="btn btn-success" id="exportExcel">
+                    <i class="fas fa-file-excel"></i> Export to Excel
+                </button>
+                <button class="btn btn-info" id="printBOM">
+                    <i class="fas fa-print"></i> Print BOM
+                </button>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
